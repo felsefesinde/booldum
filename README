@@ -9,8 +9,8 @@ Uygulamanın son versiyonuna göre en gelişmiş özellikler şu şekildedir:
 5-) Uygulamayı kullanırken gerekli docx modüllerine sahip olduğunuzdan emin olun. Uygulamanın .docx özelliğinden faydalanmak istemezseniz booldum_nodocx.py adlı
 uygulamadan faydalanabilirsiniz.
 
-PYTHOn-DOCX Modülü Edinmek İçin:
-pip install python-docx kodunu terminalinizde çalıştırabilir ve bu modülü edinerek Booldum Uygulamasının ".docx" uzantılı özelliğinden de faydalanabilirsiniz.
+PYTHON-DOCX Modülü Edinmek İçin:
+"pip install python-docx" kodunu terminalinizde çalıştırabilir ve bu modülü edinerek Booldum Uygulamasının ".docx" uzantılı özelliğinden de faydalanabilirsiniz.
 
 İletişim:
 Instagram: @felsefesinde & @burakalanyalioglu 
