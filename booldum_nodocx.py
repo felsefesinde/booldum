@@ -58,17 +58,18 @@ class Booldum:
         self.__wrong_words: list[str] = []
         self.__set_words()
 
-    def __word_in_text(self, word: str) -> str:
-        """Returns desired word in a part of text
+    def __word_in_text(self, word_index: int, length: int) -> str:
+        """Returns context around given index according to the length of the word.
 
         Parameters
         ----------
-        word : str
-            Desired word to be return in text
+        word_index : int
+            Desired word index to be returned
+
+        length: int
+            Length of the word
         """
-        length = len(word)
-        position = self.__text.find(word)
-        new_text = self.__text[position:position + length + 15]
+        new_text = self.__text[word_index:word_index + length + 15]
         return new_text
 
     def __set_words(self) -> None:
@@ -88,33 +89,43 @@ class Booldum:
         print("Booldum uygulamasına hoş geldiniz!")
 
         # Metinde boş satır varsa çalışmıyor.
-        self.__text = input("Lütfen metninizi  giriniz:\n")
+        self.__text = input("Lütfen metninizi giriniz:\n")
 
-        for wrong_word in self.__wrong_words:
+        # Burası bayağı değişti, pull requestte anlattığım nedenlerden ötürü.
+        i = 0
+        start = 0
+        while i < len(self.__wrong_words):
             # Bu eklenti bugı tam düzeltmese de "Ankara" kelimesindeki "kar"ı bulmasını engelliyor.
-            wrong_word_index = self.__text.find(" " + wrong_word) 
+            wrong_word = self.__wrong_words[i]
+            wrong_word_index = self.__text.find(wrong_word, start)
             
             if wrong_word_index >= 0: # 1. kelime yanlış olunca oluşan bugı düzeltiyor.
+                # Ankara kelimesindeki "kar" gibi kelimelerin okuyucuya sorulmadan elenmesi amaçlandı. 
+                if wrong_word_index != 0 and self.__text[wrong_word_index - 1] not in [" ", "\t", "\n"]:
+                    start = wrong_word_index + len(wrong_word)
+                    continue
                 change = input(f"Metninizde geçen '{wrong_word}'\n" +
                                 "ifadesinin şapka ile yazılıp " +
                                 "yazılmayacağını kontrol ediniz.\n" +
                                 "Metindeki yeri şu şekilde:" +
-                               f"'...{self.__word_in_text(wrong_word)}...'\n" +
+                               f"'...{self.__word_in_text(wrong_word_index, len(wrong_word))}...'\n" +
                                 "Gerekli değişiklik yapılsın mı? " +
                                 "[Evet: e | Hayır: h]: ")
                 try:
                     if change.upper() == "E":
-                        wrong_word_index = self.__wrong_words.index(wrong_word)
-                        correct_word = self.__correct_words[wrong_word_index]
-                        edited = self.__text.replace(wrong_word, correct_word)
-                        self.__text = edited
+                        correct_word = self.__correct_words[i]
+                        self.__text = self.__text[:wrong_word_index] + correct_word + self.__text[(wrong_word_index + len(correct_word)):]
                     elif change.upper() == "H":
                         print(f"Kelime '{wrong_word}' aynı bırakıldı!")
+                        start = wrong_word_index + len(wrong_word)
                     else:
                         raise(IndexError(f"Geçersiz işlem komutu: {change}"))
                 except IndexError:
                     print("İşlem atlandı!")
                     print(f"Kelime '{wrong_word}' aynı bırakıldı!")
+            else:
+                i += 1
+                start = 0
 
     def __write_txt(self) -> None:
         """Create a .txt file that contains text
