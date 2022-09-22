@@ -50,15 +50,15 @@ class Booldum:
         Exits app
     """
 
-    def __init__(self):
-        self.__text = ""
-        self.__corrected_words_file = open("correct_words.txt", "r")
-        self.__correct_words = []
-        self.__wrong_words_file = open("wrong_words.txt", "r")
-        self.__wrong_words = []
+    def __init__(self) -> None:
+        self.__text: str = ""
+        self.__corrected_words_file_name: str = "correct_words.txt"
+        self.__wrong_words_file_name: str = "wrong_words.txt"
+        self.__correct_words: list[str] = []
+        self.__wrong_words: list[str] = []
         self.__set_words()
 
-    def __word_in_text(self, word):
+    def __word_in_text(self, word: str) -> str:
         """Returns desired word in a part of text
 
         Parameters
@@ -71,23 +71,30 @@ class Booldum:
         new_text = self.__text[position:position + length + 15]
         return new_text
 
-    def __set_words(self):
+    def __set_words(self) -> None:
         """Set word lists by word files
         """
-        for corrected_word in self.__corrected_words_file:
-            self.__correct_words.append(corrected_word[:-1])
+        with open(self.__corrected_words_file_name, "r") as corrected_words_file:
+            for corrected_word in corrected_words_file:
+                self.__correct_words.append(corrected_word[:-1])
 
-        for wrong_word in self.__wrong_words_file:
-            self.__wrong_words.append(wrong_word[:-1])
+        with open(self.__wrong_words_file_name, "r") as wrong_words_file:
+            for wrong_word in wrong_words_file:
+                self.__wrong_words.append(wrong_word[:-1])
 
-    def change_wrong_words(self):
+    def change_wrong_words(self) -> None:
         """Correct wrong words if user wants to change
         """
         print("Booldum uygulamasına hoş geldiniz!")
-        self.__text = input("Lütfen metninizi giriniz: ")
+
+        # Metinde boş satır varsa çalışmıyor.
+        self.__text = input("Lütfen metninizi  giriniz:\n")
+
         for wrong_word in self.__wrong_words:
-            wrong_word_index = self.__text.find(wrong_word)
-            if wrong_word_index > 0:
+            # Bu eklenti bugı tam düzeltmese de "Ankara" kelimesindeki "kar"ı bulmasını engelliyor.
+            wrong_word_index = self.__text.find(" " + wrong_word) 
+            
+            if wrong_word_index >= 0: # 1. kelime yanlış olunca oluşan bugı düzeltiyor.
                 change = input(f"Metninizde geçen '{wrong_word}'\n" +
                                 "ifadesinin şapka ile yazılıp " +
                                 "yazılmayacağını kontrol ediniz.\n" +
@@ -105,34 +112,34 @@ class Booldum:
                         print(f"Kelime '{wrong_word}' aynı bırakıldı!")
                     else:
                         raise(IndexError(f"Geçersiz işlem komutu: {change}"))
-                except IndexError as e:
+                except IndexError:
                     print("İşlem atlandı!")
                     print(f"Kelime '{wrong_word}' aynı bırakıldı!")
 
-    def __write_txt(self):
+    def __write_txt(self) -> None:
         """Create a .txt file that contains text
         """
         with open("Booldum_Metin.txt", "w", encoding="utf-8") as edited:
             edited.write(self.__text)
 
-    def write_edited_text(self):
+    def write_edited_text(self) -> None:
         """Create a folder that contains text and print the text
         """
         self.__write_txt()
-        print(f"İşte metninizdeki şapka hatalarının Booldum tarafından " +
-               "düzeltilmiş hâli:\n" +
-              f"{self.__text}")
+        # Okunabilirlik için birkaç tane newline ekledim.
+        print(f"\nİşte metninizdeki şapka hatalarının Booldum tarafından " +
+               "düzeltilmiş hâli:\n\n\n" +
+              f"{self.__text}\n\n")
 
-    def get_text(self):
+    def get_text(self) -> str:
         """Returns text
         """
         return self.__text
 
-    def exit(self):
+    def exit(self) -> None:
         """Exits app
         """
-        self.__corrected_words_file.close()
-        self.__wrong_words_file.close()
+        print("Yazının düzeltilmiş haline Booldum_Metin dosyasından ulaşabilirsiniz.")
         input("Kapatmak için Enter tuşuna basınız...")
 
 if __name__ == "__main__":
